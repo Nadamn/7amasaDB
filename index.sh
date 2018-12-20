@@ -30,7 +30,6 @@ case $REPLY in
 		do
 			case $REPLY in
 				1) echo "add table" ## add its script
-ls
 				;;
 				2) echo "delete table" ## add its script
 				;;
