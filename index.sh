@@ -10,12 +10,13 @@ fi
 
 echo "Welcome to 7amasaDB" ## change name
 
+
 PS3="main menu select: "
 select choice in "Create New Database" "Delete Existing Database" "Switch to Database" "exit"
 do
 	PS3="main menu select: "
 	case $REPLY in
-		1) echo Create New DataBase ## add its script
+		1) ./create_db.sh
 		break
 		;;
 
