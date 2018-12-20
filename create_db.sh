@@ -35,6 +35,8 @@ else
 	else
 		succ=1
 		echo "your database created successfully!"
+		touch /var/7amasaDB/$dbname/.meta
+		echo "dbname:"$dbname >> /var/7amasaDB/$dbname/.meta
 	fi 
 	
 fi 
