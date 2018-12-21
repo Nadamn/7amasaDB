@@ -40,7 +40,7 @@ do
 			select choice2 in "Add Table" "Delete Table" "Insert Record" "Update Record" "Delete Record" "Delete Database" "back" "exit" #choices of a specific database
 			do
 				case $REPLY in
-					1) echo "add table" ## add its script
+					1) ./create_table.sh $DBName
 					;;
 					2) echo "delete table" ## add its script
 					;;
