@@ -44,7 +44,7 @@ do
 					;;
 					2) echo "delete table" ## add its script
 					;;
-					3) echo "insert record" ## add its script
+					3) ./insert_record.sh $DBName 
 					;;
 					4) echo "update record" ## add its script
 					;;

@@ -1,41 +1,84 @@
-#!/usr/bin/bash
+#!/usr/bin/bash 
 
-#this file is called with argument $1 db name and $2 table name
+#this file is called with argument $1 db name
 
 export IFS=":"
 typeset -i colNum=3
+typeset -i i=-1
+intPattern='[0-9]+$'
 
-for col in `head -n 1 /var/7amasaDB/$1/$2`
+echo "Enter table Name"
+read tName
+
+if [[ ! `grep -c "$tName" /var/7amasaDB/$1/.meta` -gt 0 ]]
+then
+	echo table not found
+	exit
+fi
+
+
+for col in `head -n 1 /var/7amasaDB/$1/$tName`
 do
-	flag=0
+	flag=1
+	colNum=$colNum+1
+	constraint=`grep "$tName" /var/7amasaDB/$1/.meta | cut -d: -f $colNum`
+
 	while true
 	do
+
 		echo "$col: "
 		read colVal
-		colNum=colNum+1
-		constraint=`grep "$2" /var/7amasaDB/$1/.meta | cut -d: -f $colNum`	
-		echo "$constraint"
+	
 		if [ ! $colVal ]
+ 
 		then
-			if [ $colVal=NS -o $constraint=NI ]
+			if [ "$constraint" = "NS" -o "$constraint" = "NI" ]
 			then
-				echo "not null"
+				echo "$col can't be null"
+				flag=0
 			else
 				flag=1
 			fi
+
 		else
-			if [ $constraint=NI -a $colVal=~'^[0-9]+$' ]
+
+			if [ "$constraint" = "NI" -o "$constraint" = "I" ]
 			then
-				flag=1
+				if [[ $colVal =~ $intPattern ]]
+				then
+					flag=1
+				else
+					echo "$col must be an integer"
+					flag=0
+				fi
 			else
-				echo "$colVal should be int"
+				flag=1
 			fi
+
 		fi
+
+
 		if [ $flag -eq 1 ]
 		then
+			i=$i+1
+			columns[$i]=$colVal
 			break
 		fi
+
 	done
+
 done
 
+i=0
+while [[ $i -lt ${#columns[*]}-1 ]]
+do
+	newline=$newline${columns[$i]}":"
+	i=i+1
+	if [[ $i -eq ${#columns[*]}-1 ]]
+	then
+		newline="$newline${columns[$i]}"
+	fi
+done
+
+echo "$newline" >> /var/7amasaDB/$1/$tName
 
