@@ -22,7 +22,9 @@ echo "Are you sure you want to delete table $tName? y/n"
 select choice in "y" "n"
 do
 	case $REPLY in
-		1) rm -f /var/7amasaDB/$1/$tName
+		1) #rm -f /var/7amasaDB/$1/$tName
+		echo `grep "$tName" /var/7amasaDB/$1/.meta`
+		sed -i "/$tName/d" /var/7amasaDB/$1/.meta
 		break
 		;;
 		
@@ -33,3 +35,4 @@ do
 	esac
 done
 
+#t1:3:4:NI:NS:I
