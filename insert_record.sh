@@ -28,6 +28,17 @@ do
 
 		echo "$col: "
 		read colVal
+		
+		if [ $colNum -eq 4  ]
+		then
+			echo "hello"
+			uniq=`grep "$colVal" /var/7amasaDB/$1/$tName | cut -d: -f1`
+			if [ $uniq = $colVal ]
+			then
+				echo "this is id is not uniq"
+				continue
+			fi
+		fi
 	
 		if [ ! $colVal ]
  
