@@ -7,7 +7,6 @@ then
 	exit
 fi
 
-
 echo "Welcome to 7amasaDB" ## change name
 
 

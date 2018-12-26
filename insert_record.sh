@@ -25,23 +25,10 @@ do
 
 	while true
 	do
-
 		echo "$col: "
 		read colVal
-		
-		if [ $colNum -eq 4  ]
-		then
-			echo "hello"
-			uniq=`grep "$colVal" /var/7amasaDB/$1/$tName | cut -d: -f1`
-			if [ $uniq = $colVal ]
-			then
-				echo "this is id is not uniq"
-				continue
-			fi
-		fi
 	
 		if [ ! $colVal ]
- 
 		then
 			if [ "$constraint" = "NS" -o "$constraint" = "NI" ]
 			then
@@ -52,20 +39,29 @@ do
 			fi
 
 		else
-
-			if [ "$constraint" = "NI" -o "$constraint" = "I" ]
+			if [[ $colNum -eq 4  ]]
 			then
-				if [[ $colVal =~ $intPattern ]]
+				uniq=`grep "$colVal" /var/7amasaDB/$1/$tName | cut -d: -f $colNum`
+				if [ $uniq ]
 				then
-					flag=1
-				else
-					echo "$col must be an integer"
+					echo "id with the same value exists"
 					flag=0
+				else
+					if [ "$constraint" = "NI" -o "$constraint" = "I" ]
+					then
+						if [[ $colVal =~ $intPattern ]]
+						then
+							flag=1
+						else
+							echo "$col must be an integer"
+							flag=0
+						fi
+					else
+						flag=1
+					fi
+		
 				fi
-			else
-				flag=1
 			fi
-
 		fi
 
 
