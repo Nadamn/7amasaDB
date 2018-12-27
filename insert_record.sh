@@ -42,7 +42,8 @@ do
 			if [[ $colNum -eq 4  ]]
 			then
 				uniq=`grep "$colVal" /var/7amasaDB/$1/$tName | cut -d: -f $colNum`
-				if [ $uniq ]
+				echo $uniq
+				if (($uniq))
 				then
 					echo "id with the same value exists"
 					flag=0
