@@ -36,26 +36,22 @@ do
 		if [ -d /var/7amasaDB/$DBName ]
 		then
 			PS3="database $DBName select: "
-			select choice2 in "Add Table" "Delete Table" "Insert Record" "Update Record" "Delete Record" "Delete Database" "back" "exit" #choices of a specific database
+			select choice2 in "Add Table" "Delete Table" "Delete Database" "switch to table" "back" "exit" #choices of a specific database
 			do
 				case $REPLY in
 					1) ./create_table.sh $DBName
 					;;
 					2) echo "delete table" ## add its script
 					;;
-					3) ./insert_record.sh $DBName 
+					3) 	./delete_database.sh $DBName
 					;;
-					4) echo "update record" ## add its script
+					4) 	./table_index.sh $DBName
 					;;
-					5) echo "delete table" ## add its script
-					;;
-					6) 	./delete_database.sh $DBName
-					;;
-					7) echo "1) Create New Database	      2) Delete Existing Database
+					5) echo "1) Create New Database	      2) Delete Existing Database
 	3) Switch to Database	      4) exit"
 					break
 					;;
-					8) exit
+					6) exit
 					;;
 					*) echo Choose a Valid Option! please..
 				esac
