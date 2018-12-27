@@ -41,26 +41,25 @@ do
 		else
 			if [[ $colNum -eq 4  ]]
 			then
-				uniq=`grep "$colVal" /var/7amasaDB/$1/$tName | cut -d: -f $colNum`
+				uniq=`grep "$colVal" /var/7amasaDB/$1/$tName | cut -d: -f 1`
 				if [ $uniq ]
 				then
 					echo "id with the same value exists"
 					flag=0
-				else
-					if [ "$constraint" = "NI" -o "$constraint" = "I" ]
-					then
-						if [[ $colVal =~ $intPattern ]]
-						then
-							flag=1
-						else
-							echo "$col must be an integer"
-							flag=0
-						fi
-					else
-						flag=1
-					fi
-		
+					continue
 				fi
+			fi
+			if [ "$constraint" = "NI" -o "$constraint" = "I" ]
+			then
+				if [[ $colVal =~ $intPattern ]]
+				then
+					flag=1
+				else
+					echo "$col must be an integer"
+					flag=0
+				fi
+			else
+				flag=1
 			fi
 		fi
 
