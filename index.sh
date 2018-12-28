@@ -46,7 +46,7 @@ do
 					;;
 					2) ./create_table.sh $DBName
 					;;
-					3) echo "delete table" ## add its script
+					3) ./delete_table.sh $DBName
 					;;
 					4) 	./delete_database.sh $DBName
 					;;
