@@ -7,63 +7,42 @@ then
 	exit
 fi
 
-echo "Welcome to 7amasaDB" ## change name
-
-
-PS3="main menu select: "
-select choice in "List Databases" "Create New Database" "Delete Existing Database" "Switch to Database" "exit"
+while true
 do
-	PS3="main menu select: "
-	case $REPLY in
-	        1)
-                ls -1 "/var/7amasaDB/"
-                ;;
+	mainForm=$(yad \
+	--title "7amasa DB" --text "Welcome to 7amasaDB:" \
+	--button="1) Create New Database":1 \
+	--button="2) Delete Existing Database":2 \
+	--button="3) Switch to Database":3 \
+	--button="4) exit":4 \
+	)
 
-		2) ./create_db.sh
+
+	choice=$?
+
+	case $choice in
+		1) ./create_db.sh
 		break
 		;;
 
-		3) echo "Enter Database Name"
-		read DBName
+		2) 
+		tmpForm=$(yad --title "7amasa DB" --text "Enter Database Name: " --form --field="name" )
+		DBName=$(echo $tmpForm | awk 'BEGIN {FS="|" } { print $1 }') 
+
 		if [ -d /var/7amasaDB/$DBName ] #change name
 		then
 			./delete_database.sh $DBName
+			continue
 		else
-			echo "Database Not found"
+			yad --title "7amasa DB" --text "Database not found" --button="OK":1
+			continue
 		fi
 		break	
 		;;
-		4)
-                echo "Enter Database Name: "
-                read DBName
-		if [ -d "/var/7amasaDB/$DBName" ]
-		then
-			PS3="database $DBName select: "
-			select choice2 in "List tables" "Add Table" "Delete Table" "Delete Database" "switch to table" "back" "exit" #choices of a specific database
-			do
-				case $REPLY in
-					1)ls -1 /var/7amasaDB/$DBName 
-					;;
-					2) ./create_table.sh $DBName
-					;;
-					3) ./delete_table.sh $DBName
-					;;
-					4) 	./delete_database.sh $DBName
-					;;
-					5) 	./table_index.sh $DBName
-					;;
-					6) echo "1) Create New Database	      2) Delete Existing Database
-	3) Switch to Database	      4) exit"
-					break
-					;;
-					7) exit
-					;;
-					*) echo Choose a Valid Option! please..
-				esac
-			done
-		else
-			echo "Database Not found"
-		fi    
+
+		3) ./switch_to_db.sh 
+			continue
+      
 		;;
 
 		4) exit
