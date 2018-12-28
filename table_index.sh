@@ -5,13 +5,22 @@
 echo "Insert Table Name: "
 read tName
 
-select choice in "insert new record" "update record" "exit"
+if [[ ! `grep -c "$2" /var/7amasaDB/$1/.meta` -gt 0 ]]
+then
+        echo table not found
+        exit
+fi
+
+
+select choice in "Display content" "insert new record" "update record" "exit"
 do
 	case $REPLY in 
-	1) ./insert_record.sh $1 $tName
+	1) cat /var/7amasaDB/$1/$tName
 	;;
-	2) echo "update record"
+	2) ./insert_record.sh $1 $tName
 	;;
-	3) exit ;;
+	3) ./modify.sh $1 $tName
+	;;
+	4) exit ;;
 	esac
 done

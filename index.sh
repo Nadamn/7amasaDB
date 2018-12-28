@@ -11,15 +11,19 @@ echo "Welcome to 7amasaDB" ## change name
 
 
 PS3="main menu select: "
-select choice in "Create New Database" "Delete Existing Database" "Switch to Database" "exit"
+select choice in "List Databases" "Create New Database" "Delete Existing Database" "Switch to Database" "exit"
 do
 	PS3="main menu select: "
 	case $REPLY in
-		1) ./create_db.sh
+	        1)
+                ls -1 "/var/7amasaDB/"
+                ;;
+
+		2) ./create_db.sh
 		break
 		;;
 
-		2) echo "Enter Database Name"
+		3) echo "Enter Database Name"
 		read DBName
 		if [ -d /var/7amasaDB/$DBName ] #change name
 		then
@@ -29,29 +33,30 @@ do
 		fi
 		break	
 		;;
-
-		3)
-		echo "Enter Database Name: "
-		read DBName
-		if [ -d /var/7amasaDB/$DBName ]
+		4)
+                echo "Enter Database Name: "
+                read DBName
+		if [ -d "/var/7amasaDB/$DBName" ]
 		then
 			PS3="database $DBName select: "
-			select choice2 in "Add Table" "Delete Table" "Delete Database" "switch to table" "back" "exit" #choices of a specific database
+			select choice2 in "List tables" "Add Table" "Delete Table" "Delete Database" "switch to table" "back" "exit" #choices of a specific database
 			do
 				case $REPLY in
-					1) ./create_table.sh $DBName
+					1)ls -1 /var/7amasaDB/$DBName 
 					;;
-					2) echo "delete table" ## add its script
+					2) ./create_table.sh $DBName
 					;;
-					3) 	./delete_database.sh $DBName
+					3) echo "delete table" ## add its script
 					;;
-					4) 	./table_index.sh $DBName
+					4) 	./delete_database.sh $DBName
 					;;
-					5) echo "1) Create New Database	      2) Delete Existing Database
+					5) 	./table_index.sh $DBName
+					;;
+					6) echo "1) Create New Database	      2) Delete Existing Database
 	3) Switch to Database	      4) exit"
 					break
 					;;
-					6) exit
+					7) exit
 					;;
 					*) echo Choose a Valid Option! please..
 				esac

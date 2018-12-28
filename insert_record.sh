@@ -7,18 +7,12 @@ typeset -i colNum=3
 typeset -i i=-1
 intPattern='[0-9]+$'
 
-if [[ ! `grep -c "$2" /var/7amasaDB/$1/.meta` -gt 0 ]]
-then
-	echo table not found
-	exit
-fi
-
 
 for col in `head -n 1 /var/7amasaDB/$1/$2`
 do
 	flag=1
 	colNum=$colNum+1
-	constraint=`grep "$2" /var/7amasaDB/$1/.meta | cut -d: -f $colNum`
+	constraint=`grep -w "$2" /var/7amasaDB/$1/.meta | cut -d: -f $colNum`
 
 	while true
 	do
@@ -38,7 +32,7 @@ do
 		else
 			if [[ $colNum -eq 4  ]]
 			then
-				uniq=`grep "$colVal" /var/7amasaDB/$1/$2 | cut -d: -f 1`
+				uniq=`grep -w "$colVal" /var/7amasaDB/$1/$2 | cut -d: -f 1`
 				if [ $uniq ]
 				then
 					echo "id with the same value exists"
