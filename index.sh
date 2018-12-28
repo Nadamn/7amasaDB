@@ -42,6 +42,7 @@ do
 
 		3) ./switch_to_db.sh 
 			continue
+      
 		;;
 
 		4) exit

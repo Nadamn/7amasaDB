@@ -1,27 +1,18 @@
 #!/usr/bin/bash 
 
-#this file is called with argument $1 db name
+#this file is called with argument $1 db name and table name $2
 
 export IFS=":"
 typeset -i colNum=3
 typeset -i i=-1
 intPattern='[0-9]+$'
 
-echo "Enter table Name"
-read tName
 
-if [[ ! `grep -c "$tName" /var/7amasaDB/$1/.meta` -gt 0 ]]
-then
-	echo table not found
-	exit
-fi
-
-
-for col in `head -n 1 /var/7amasaDB/$1/$tName`
+for col in `head -n 1 /var/7amasaDB/$1/$2`
 do
 	flag=1
 	colNum=$colNum+1
-	constraint=`grep "$tName" /var/7amasaDB/$1/.meta | cut -d: -f $colNum`
+	constraint=`grep -w "$2" /var/7amasaDB/$1/.meta | cut -d: -f $colNum`
 
 	while true
 	do
@@ -41,26 +32,25 @@ do
 		else
 			if [[ $colNum -eq 4  ]]
 			then
-				uniq=`grep "$colVal" /var/7amasaDB/$1/$tName | cut -d: -f $colNum`
+				uniq=`grep -w "$colVal" /var/7amasaDB/$1/$2 | cut -d: -f 1`
 				if [ $uniq ]
 				then
 					echo "id with the same value exists"
 					flag=0
-				else
-					if [ "$constraint" = "NI" -o "$constraint" = "I" ]
-					then
-						if [[ $colVal =~ $intPattern ]]
-						then
-							flag=1
-						else
-							echo "$col must be an integer"
-							flag=0
-						fi
-					else
-						flag=1
-					fi
-		
+					continue
 				fi
+			fi
+			if [ "$constraint" = "NI" -o "$constraint" = "I" ]
+			then
+				if [[ $colVal =~ $intPattern ]]
+				then
+					flag=1
+				else
+					echo "$col must be an integer"
+					flag=0
+				fi
+			else
+				flag=1
 			fi
 		fi
 
@@ -87,5 +77,5 @@ do
 	fi
 done
 
-echo "$newline" >> /var/7amasaDB/$1/$tName
+echo "$newline" >> /var/7amasaDB/$1/$2
 
