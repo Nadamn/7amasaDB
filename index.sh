@@ -38,10 +38,9 @@ do
 		;;
 
 		4)
-		exit 1
+		exit 
 		;;
-		252)
-		exit 1
+		252) exit
 		;;
 	esac
 done

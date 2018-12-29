@@ -22,7 +22,7 @@ then
 elif [ $choice0 = 0 ]
 then
 	tName=$(echo $tmpForm | awk 'BEGIN {FS="|" } { print $1 }')
-	res= 
+
 	while [ true ]
 	do
 		typeset -i flag=1
@@ -35,6 +35,8 @@ then
 				tForm=$(yad \
 					--center \
 					--title "7amasa DB Engine" \
+					--text "$tName Table" \
+					--text-align=center \
 					--button="1) Display content":1 \
 					--button="2) insert new record":2 \
 					--button="3) update record":3 \
@@ -54,6 +56,8 @@ then
 				4) ./delete_record.sh $1 $tName
 				;;
 				5) break
+				;;
+				252) kill -9 `ps --pid $$ -oppid=`; exit 
 				;;
 				esac
 			fi

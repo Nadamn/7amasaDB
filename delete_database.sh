@@ -16,7 +16,7 @@ then
 
 elif [ $choice0 = 252 ]
 then 
-	exit 1
+	kill -9 `ps --pid $$ -oppid=`; exit
 elif [ $choice0 = 0 ]
 then
 	DBName=$(echo $tmpForm | awk 'BEGIN {FS="|" } { print $1 }') 
@@ -47,7 +47,7 @@ then
 			;;
 			2) ./index.sh
 			;;
-			252) exit 1
+			252) kill -9 `ps --pid $$ -oppid=`; exit
 			;;
 		esac
 	else
