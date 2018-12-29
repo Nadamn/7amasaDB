@@ -40,8 +40,7 @@ do
 		4)
 		exit 1
 		;;
-		252)
-		exit 1
+		252) kill -9 `ps --pid $$ -oppid=`; exit
 		;;
 	esac
 done

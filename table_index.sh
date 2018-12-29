@@ -40,8 +40,8 @@ then
 					--button="1) Display content":1 \
 					--button="2) insert new record":2 \
 					--button="3) update record":3 \
-					--button="4) Delete record":3 \
-					--button="5) back":4 \
+					--button="4) Delete record":4 \
+					--button="5) back":5 \
 					)
 
 				choice=$?
@@ -56,6 +56,8 @@ then
 				4) echo "delete record"
 				;;
 				5) break 
+				;;
+				252) kill -9 `ps --pid $$ -oppid=`; exit 
 				;;
 				esac
 			fi

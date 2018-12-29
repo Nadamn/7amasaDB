@@ -17,78 +17,104 @@ do
 
 	while true
 	do
+		tmpForm=$(yad \
+		--center \
+		--text-align=center \
+		--title "7amasa DB" \
+		--form --field="$col" \
+		--button=gtk-ok:0 \
+		--button=gtk-cancel:1 \
+		)
 
-		tmpForm=$(yad --title "7amasa DB" --form --field="$col" --button="OK":1)
-		colVal=$(echo $tmpForm | awk 'BEGIN {FS="|" } { print $1 }') 
-		echo $colVal
+		choice0=$?
 
-		if [[ $colVal =~ $regex ]]
+		if [ $choice0 = 1 ]
 		then
-			echo hello
+			break 2
 
-			if [ ! $colVal ]
+		elif [ $choice0 = 252 ]
+		then 
+			kill -9 `ps --pid $$ -oppid=`; exit
+		elif [ $choice0 = 0 ]
+		then
+			colVal=$(echo $tmpForm | awk 'BEGIN {FS="|" } { print $1 }') 
+
+			if [[ $colVal =~ $regex ]]
 			then
-				if [ "$constraint" = "NS" -o "$constraint" = "NI" ]
+				if [ ! $colVal ]
 				then
-					flag=0
-					yad \
-					--title "7amasa DB" --text "$col can't be null" \
-					--button="back":1
-					continue
+					if [ "$constraint" = "NS" -o "$constraint" = "NI" ]
+					then
+						flag=0
+						yad \
+						--title "7amasa DB Engine" \
+						--center \
+						--text-align=center \
+						--text "$col can't be null" \
+						--button="back":1
+						continue
+					else
+						colVal="  "
+						flag=1
+					fi
+
 				else
-					colVal="  "
-					flag=1
+						if [[ $colNum -eq 4  ]]
+						then
+							uniq=`grep -w "$colVal" /var/7amasaDB/$1/$2 | cut -d: -f 1`
+							if [ $uniq ]
+							then
+								flag=0
+								yad \
+								--title "7amasa DB Engine" \
+								--center \
+								--text-align=center \
+								--text "id with the same value exists" \
+								--button="back":1
+								continue
+							fi
+						fi
+
+						if [ "$constraint" = "NI" -o "$constraint" = "I" ]
+						then
+							if [[ $colVal =~ $intPattern ]]
+							then
+								flag=1
+							else
+								flag=0
+								yad \
+								--title "7amasa DB Engine" \
+								--center \
+								--text-align=center \
+								--text "$col must be an integer" \
+								--button="back":1
+								continue
+							fi
+						else
+
+							flag=1
+
+						fi
 				fi
 
 
-				
+				if [ $flag -eq 1 ]
+				then
+						i=$i+1
+						columns[$i]=$colVal
+						break
+				fi
+
 
 			else
-					if [[ $colNum -eq 4  ]]
-					then
-						uniq=`grep -w "$colVal" /var/7amasaDB/$1/$2 | cut -d: -f 1`
-						if [ $uniq ]
-						then
-							echo "id with the same value exists"
-							flag=0
-							continue
-						fi
-					fi
-
-					if [ "$constraint" = "NI" -o "$constraint" = "I" ]
-					then
-						if [[ $colVal =~ $intPattern ]]
-						then
-							flag=1
-						else
-							flag=0
-							yad \
-							--title "7amasa DB" --text "$col must be an integer" \
-							--button="back":1
-							continue
-						fi
-					else
-
-						flag=1
-
-					fi
+				yad \
+				--title "7amasa DB Engine" \
+				--center \
+				--text-align=center \
+				--text "value contains unaccepted characters or white spaces" \
+				--button="back":1
+				continue
 			fi
-
-
-			if [ $flag -eq 1 ]
-			then
-					i=$i+1
-					columns[$i]=$colVal
-					break
-			fi
-
-
-		else
-			yad \
-			--title "7amasa DB" \
-			--text "value contains unaccepted characters or white spaces" \
-			--button="back":1
-			continue
 		fi
 
 
