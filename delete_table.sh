@@ -2,37 +2,60 @@
 
 #this script needs to be called with argument 1 the DB name
 
-echo "Enter table name"
+tmpForm=$(yad \
+--center \
+--title "7amasa DB Engine" \
+--form --field="Enter Table Name" \
+--button=gtk-ok:0 \
+--button=gtk-cancel:1 \
+)
 
-read tName
+choice0=$?
 
-
-if [ ! -f /var/7amasaDB/$1/$tName ] #change name
+if [ $choice0 = 1 ]
 then
-		echo "table doesn't exist"
-		echo /var/7amasaDB/$1/$tName 
-		exit
+	continue
+
+elif [ $choice0 = 252 ]
+then 
+	kill -9 `ps --pid $$ -oppid=`; exit
+elif [ $choice0 = 0 ]
+then
+	tName=$(echo $tmpForm | awk 'BEGIN {FS="|" } { print $1 }') 
+
+	if [ -f /var/7amasaDB/$1/$tName -a $tName ] 
+	then
+		tmpForm=$(yad \
+		--center \
+		--title "7amasa DB Engine" \
+		--text "Are you sure that you want to delete table $tName ?" \
+		--button="yes":1 \
+		--button="NO":2 \
+		)
+		choice=$?
+
+		case $choice in
+			1) rm -f /var/7amasaDB/$1/$tName
+			sed -i "/$tName/d" /var/7amasaDB/$1/.meta
+			continue
+			;;
+			
+			2)
+			continue
+			;;
+			
+			252)
+			kill -9 `ps --pid $$ -oppid=`; exit
+			;;
+		esac
+	else
+		tmpForm=$(yad \
+		--center \
+		--title "7amasa DB Engine" \
+		--text "$tName Table not found" \
+		--button=gtk-go-back:1 \
+		)
+		continue
+	fi
+
 fi
-
-
-PS3="> "
-
-echo "Are you sure you want to delete table $tName? y/n"
-
-select choice in "y" "n"
-do
-	case $REPLY in
-		1) rm -f /var/7amasaDB/$1/$tName
-		echo `grep "$tName" /var/7amasaDB/$1/.meta`
-		sed -i "/$tName/d" /var/7amasaDB/$1/.meta
-		break
-		;;
-		
-		2)
-		break;
-		;;
-		*) echo Enter a valid option! please..
-	esac
-done
-
-#t1:3:4:NI:NS:I

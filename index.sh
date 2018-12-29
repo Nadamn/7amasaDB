@@ -9,8 +9,12 @@ fi
 
 while true
 do
+
 	mainForm=$(yad \
-	--title "7amasa DB" --text "Welcome to 7amasaDB:" \
+	--center \
+	--title "7amasa DB Engine" \
+	--text "Welcome to 7amasaDB" \
+	--text-align=center \
 	--button="1) Create New Database":1 \
 	--button="2) Delete Existing Database":2 \
 	--button="3) Switch to Database":3 \
@@ -25,29 +29,19 @@ do
 		break
 		;;
 
-		2) 
-		tmpForm=$(yad --title "7amasa DB" --text "Enter Database Name: " --form --field="name" )
-		DBName=$(echo $tmpForm | awk 'BEGIN {FS="|" } { print $1 }') 
-
-		if [ -d /var/7amasaDB/$DBName ] #change name
-		then
-			./delete_database.sh $DBName
-			continue
-		else
-			yad --title "7amasa DB" --text "Database not found" --button="OK":1
-			continue
-		fi
-		break	
+		2) ./delete_database.sh
+		break
 		;;
 
 		3) ./switch_to_db.sh 
 			continue
-      
 		;;
 
-		4) exit
+		4)
+		exit 1
 		;;
-
-		*) echo Choose a Valid Option! please..
+		252)
+		exit 1
+		;;
 	esac
 done
