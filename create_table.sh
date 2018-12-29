@@ -5,14 +5,26 @@
 # I : integer 
 # S : string 
 # example : Ni not null and integer
-
+regex='^[a-z|A-Z][0-9|a-z|A-Z|_|\d]*$'
 succ=0
 
 while [ $succ = 0 ]
 do
 
 clear
-read -p "Enter table name: " Table_name 
+
+	while true
+	do 
+		read -p "Enter table name: " Table_name
+		
+		if [[ $Table_name =~ $regex ]]
+		then
+			break
+		else
+			echo "Invalid characters"
+		fi
+	done
+ 
 
 exist=0
 
@@ -53,19 +65,60 @@ done
 clear
 read -p "Enter number of columns in your table: " noc
 
+
+
 for (( i=1; i<=$noc; i++ ))
 do 
 	if [ $i -eq 1 ]
 	then
 		clear
-		read -p "Enter column name [PK] $i/$noc: " arr_tab[$i]
+
+        	while true
+     	  	do
+ 
+	                 read -p "Enter column name [PK] $i/$noc: " arr_tab[$i]
+
+               		 if [[ ${arr_tab[$i]} =~ $regex ]]
+               		 then
+                	        break
+              		  else
+                	        echo "Invalid characters"
+        	         fi
+	        done
+		prev[$i]=${arr_tab[$i]}
 		arr_meta[1]=$Table_name
 		arr_meta[2]=$noc
 		arr_meta[3]="4"
 		arr_meta[4]="N"
 	else
 		clear
-		read -p "Enter column name $i/$noc: " arr_tab[$i]
+	
+       		 while true
+       		 do
+	                read -p "Enter column name $i/$noc: " newValue
+ 
+			for var in "${arr_tab[@]}"
+			do
+				if [[ $var == $newValue ]]
+				then 
+					echo "this name already exist"
+					continue 2	
+				fi
+			done
+
+			arr_tab[$i]=$newValue
+
+            	        if [[ ${arr_tab[$i]} =~ $regex ]]
+            	        then
+                	        break
+              	        else
+                	        echo "Invalid characters"
+        	        fi
+	         done
+
+		
+
+
 		select choice in 'Can be Null' 'Cannot be Null'
 		do 
 		case $REPLY in 

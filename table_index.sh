@@ -38,7 +38,8 @@ then
 					--button="1) Display content":1 \
 					--button="2) insert new record":2 \
 					--button="3) update record":3 \
-					--button="4) back":4 \
+					--button="4) delete record":4 \
+					--button="5) back":5 \
 					)
 
 				choice=$?
@@ -50,7 +51,9 @@ then
 				;;
 				3) ./modify.sh $1 $tName
 				;;
-				4) break 
+				4) ./delete_record.sh $1 $tName
+				;;
+				5) break
 				;;
 				esac
 			fi

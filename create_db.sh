@@ -1,12 +1,27 @@
 #! /usr/bin/bash 
-
+regex='^[a-z|A-Z][0-9|a-z|A-Z|_|\d]*$'
 succ=0
 
 while [ $succ = 0 ]
 do
 
 
-read -p "Enter your database name: " dbname 
+ 
+
+
+while true
+	do 
+		read -p "Enter your database name: " dbname
+		
+		if [[ $dbname =~ $regex ]]
+		then
+			break
+		else
+			echo "Invalid characters"
+		fi
+	done
+ 
+
 
 exist=0
 
