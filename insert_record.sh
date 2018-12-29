@@ -2,10 +2,12 @@
 
 #this file is called with argument $1 db name and table name $2
 
-export IFS=","
+export IFS=":"
 typeset -i colNum=3
 typeset -i i=-1
 intPattern='[0-9]+$'
+regex='^[a-z|A-Z|0-9][0-9|a-z|A-Z|_|\d]*$'
+
 
 for col in `head -n 1 /var/7amasaDB/$1/$2`
 do
@@ -15,60 +17,80 @@ do
 
 	while true
 	do
+
 		tmpForm=$(yad --title "7amasa DB" --form --field="$col" --button="OK":1)
 		colVal=$(echo $tmpForm | awk 'BEGIN {FS="|" } { print $1 }') 
+		echo $colVal
 
-		if [ ! $colVal ]
+		if [[ $colVal =~ $regex ]]
 		then
-			if [ "$constraint" = "NS" -o "$constraint" = "NI" ]
+			echo hello
+
+			if [ ! $colVal ]
 			then
-				flag=0
-				yad \
-				--title "7amasa DB" --text "$col can't be null" \
-				--button="back":1
-				continue
+				if [ "$constraint" = "NS" -o "$constraint" = "NI" ]
+				then
+					flag=0
+					yad \
+					--title "7amasa DB" --text "$col can't be null" \
+					--button="back":1
+					continue
+				else
+					colVal="  "
+					flag=1
+				fi
+
+
+				
+
 			else
-				colVal="  "
-				flag=1
+					if [[ $colNum -eq 4  ]]
+					then
+						uniq=`grep -w "$colVal" /var/7amasaDB/$1/$2 | cut -d: -f 1`
+						if [ $uniq ]
+						then
+							echo "id with the same value exists"
+							flag=0
+							continue
+						fi
+					fi
+
+					if [ "$constraint" = "NI" -o "$constraint" = "I" ]
+					then
+						if [[ $colVal =~ $intPattern ]]
+						then
+							flag=1
+						else
+							flag=0
+							yad \
+							--title "7amasa DB" --text "$col must be an integer" \
+							--button="back":1
+							continue
+						fi
+					else
+
+						flag=1
+
+					fi
 			fi
+
+
+			if [ $flag -eq 1 ]
+			then
+					i=$i+1
+					columns[$i]=$colVal
+					break
+			fi
+
 
 		else
-			if [[ $colNum -eq 4  ]]
-			then
-				uniq=`grep -w "$colVal" /var/7amasaDB/$1/$2 | cut -d, -f 1`
-				if [ $uniq ]
-				then
-					flag=0
-					yad \
-					--title "7amasa DB" --text "id with the same value exists" \
-					--button="back":1
-					continue
-				fi
-			fi
-			if [ "$constraint" = "NI" -o "$constraint" = "I" ]
-			then
-				if [[ $colVal =~ $intPattern ]]
-				then
-					flag=1
-				else
-					flag=0
-					yad \
-					--title "7amasa DB" --text "$col must be an integer" \
-					--button="back":1
-					continue
-				fi
-			else
-				flag=1
-			fi
+			yad \
+			--title "7amasa DB" \
+			--text "value contains unaccepted characters or white spaces" \
+			--button="back":1
+			continue
 		fi
 
-
-		if [ $flag -eq 1 ]
-		then
-			i=$i+1
-			columns[$i]=$colVal
-			break
-		fi
 
 	done
 
@@ -86,4 +108,3 @@ do
 done
 
 echo "$newline" >> /var/7amasaDB/$1/$2
-
