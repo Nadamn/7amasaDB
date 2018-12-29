@@ -6,8 +6,6 @@ export IFS=","
 typeset -i colNum=3
 typeset -i i=-1
 intPattern='[0-9]+$'
-#strPattern='[,]+'
-strPattern='\s'
 
 for col in `head -n 1 /var/7amasaDB/$1/$2`
 do
@@ -19,16 +17,6 @@ do
 	do
 		tmpForm=$(yad --title "7amasa DB" --form --field="$col" --button="OK":1)
 		colVal=$(echo $tmpForm | awk 'BEGIN {FS="|" } { print $1 }') 
-
-		if [[ $colVal =~ $strPattern ]]
-		then
-			yad \
-			--title "7amasa DB" \
-			--text "value contains unaccepted characters or white spaces" \
-			--button="back":1
-			continue
-		fi
-
 
 		if [ ! $colVal ]
 		then
@@ -89,7 +77,7 @@ done
 i=0
 while [[ $i -lt ${#columns[*]}-1 ]]
 do
-	newline=$newline${columns[$i]}","
+	newline=$newline${columns[$i]}":"
 	i=i+1
 	if [[ $i -eq ${#columns[*]}-1 ]]
 	then

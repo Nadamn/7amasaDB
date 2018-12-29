@@ -53,7 +53,7 @@ then
 		--center \
 		--title "7amasa DB Engine" \
 		--text "$tName Table not found" \
-		--button=gtk-go-back:1 \
+		--button=gtk-go-back:1	\
 		)
 		continue
 	fi
