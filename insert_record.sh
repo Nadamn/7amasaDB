@@ -23,7 +23,8 @@ do
 		if [[ $colVal =~ $strPattern ]]
 		then
 			yad \
-			--title "7amasa DB" --text "value contains unaccepted characters or white spaces" \
+			--title "7amasa DB" \
+			--text "value contains unaccepted characters or white spaces" \
 			--button="back":1
 			continue
 		fi

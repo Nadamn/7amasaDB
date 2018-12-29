@@ -31,7 +31,7 @@ then
             --text-align=center \
             --text "$DBName" \
             --button="1) Add Table":1 \
-            --button="2) Delete Table":2 \
+            --button="2) Delete existing Table":2 \
             --button="3) switch to table":3 \
             --button="4) back":4 \
             )
@@ -50,7 +50,7 @@ then
                 ;;
                 4) break
                 ;;
-                252) exit 1
+                252) kill -9 `ps --pid $$ -oppid=`; exit
                 ;;
             esac
         done

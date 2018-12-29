@@ -2,37 +2,74 @@
 
 #this file is called with argument $1 DBName
 
-tmpForm=$(yad --title "7amasa DB" --text "Enter table Name: " --form --field="name" )
-tName=$(echo $tmpForm | awk 'BEGIN {FS="|" } { print $1 }') 
+tmpForm=$(yad \
+--center \
+--title "7amasa DB Engine" \
+--form --field="Enter table Name" \
+--button=gtk-ok:0 \
+--button=gtk-cancel:1 \
+)
 
-while true
-do
-	if [[ ! `grep -c "$tName" /var/7amasaDB/$1/.meta` -gt 0 ]]
-	then
-			yad \
-			--title "7amasa DB" --text "Table Not Found" \
-			--button="back":1
+choice0=$?
+
+if [ $choice0 = 1 ]
+then
+	continue
+
+elif [ $choice0 = 252 ]
+then 
+	kill -9 `ps --pid $$ -oppid=`; exit
+elif [ $choice0 = 0 ]
+then
+	tName=$(echo $tmpForm | awk 'BEGIN {FS="|" } { print $1 }')
+	res= 
+	while [ true ]
+	do
+		typeset -i flag=1
+		if [[ `grep -c "$tName" /var/7amasaDB/$1/.meta` -gt 0 ]]
+		then
+			if [ ! $tName ]
+			then 
+				flag=0
+			else
+				tForm=$(yad \
+					--center \
+					--title "7amasa DB Engine" \
+					--button="1) Display content":1 \
+					--button="2) insert new record":2 \
+					--button="3) update record":3 \
+					--button="4) back":4 \
+					)
+
+				choice=$?
+				
+				case $choice in 
+				1) cat /var/7amasaDB/$1/$tName
+				;;
+				2) ./insert_record.sh $1 $tName
+				;;
+				3) ./modify.sh $1 $tName
+				;;
+				4) break 
+				;;
+				esac
+			fi
+		else
+			flag=0
+		fi
+		
+		if [[ $flag -eq 0 ]]
+		then
+			tmpForm=$(yad \
+			--center \
+			--title "7amasa DB Engine" \
+			--text "$tName Table not found" \
+			--button=gtk-go-back:1	\
+			)
 			break
-	fi
+		fi
 
-	tForm=$(yad \
-        --title "7amasa DB" --text "Welcome to 7amasaDB:" \
-        --button="1) Display content":1 \
-        --button="2) insert new record":2 \
-        --button="3) update record":3 \
-        --button="4) exit":4 \
-        )
+		
+	done
 
-	choice=$?
-	
-	case $choice in 
-	1) cat /var/7amasaDB/$1/$tName
-	;;
-	2) ./insert_record.sh $1 $tName
-	;;
-	3) ./modify.sh $1 $tName
-	;;
-	4) break 
-	;;
-	esac
-done
+fi
