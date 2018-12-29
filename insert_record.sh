@@ -6,6 +6,7 @@ export IFS=":"
 typeset -i colNum=3
 typeset -i i=-1
 intPattern='[0-9]+$'
+regex='^[a-z|A-Z][0-9|a-z|A-Z|_|\d]*$'
 
 
 for col in `head -n 1 /var/7amasaDB/$1/$2`
@@ -19,49 +20,54 @@ do
 		echo "$col: "
 		read colVal
 	
-		if [ ! $colVal ]
+		if [[ $colVal =~ $regex ]]
 		then
-			if [ "$constraint" = "NS" -o "$constraint" = "NI" ]
-			then
-				echo "$col can't be null"
-				flag=0
-			else
-				flag=1
-			fi
 
-		else
-			if [[ $colNum -eq 4  ]]
+			if [ ! $colVal ]
 			then
-				uniq=`grep -w "$colVal" /var/7amasaDB/$1/$2 | cut -d: -f 1`
-				if [ $uniq ]
+				if [ "$constraint" = "NS" -o "$constraint" = "NI" ]
 				then
-					echo "id with the same value exists"
+					echo "$col can't be null"
 					flag=0
-					continue
-				fi
-			fi
-			if [ "$constraint" = "NI" -o "$constraint" = "I" ]
-			then
-				if [[ $colVal =~ $intPattern ]]
-				then
-					flag=1
 				else
-					echo "$col must be an integer"
-					flag=0
+					flag=1
 				fi
+
 			else
-				flag=1
+				if [[ $colNum -eq 4  ]]
+				then
+					uniq=`grep -w "$colVal" /var/7amasaDB/$1/$2 | cut -d: -f 1`
+					if [ $uniq ]
+					then
+						echo "id with the same value exists"
+						flag=0
+						continue
+					fi
+				fi
+				if [ "$constraint" = "NI" -o "$constraint" = "I" ]
+				then
+					if [[ $colVal =~ $intPattern ]]
+					then
+						flag=1
+					else
+						echo "$col must be an integer"
+						flag=0
+					fi
+				else
+					flag=1
+				fi
 			fi
+
+
+			if [ $flag -eq 1 ]
+			then
+				i=$i+1
+				columns[$i]=$colVal
+				break
+			fi
+		else
+				echo "invalid characters "
 		fi
-
-
-		if [ $flag -eq 1 ]
-		then
-			i=$i+1
-			columns[$i]=$colVal
-			break
-		fi
-
 	done
 
 done
