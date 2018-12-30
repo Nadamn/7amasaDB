@@ -51,7 +51,6 @@ then
 				1) 
 					
 					d=$(cat /var/7amasaDB/$1/$tName)
-					echo $d
 					{ printf '%s\t' "${d[@]}"| yad --text-info --width="200" --height="200" --title="Table content" \
 					--button="back:1" \
 					2>/dev/null

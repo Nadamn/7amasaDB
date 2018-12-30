@@ -37,11 +37,11 @@ then
 		case $choice in
 			1) rm -f /var/7amasaDB/$1/$tName
 			sed -i "/$tName/d" /var/7amasaDB/$1/.meta
-			continue
+			break
 			;;
 			
 			2)
-			continue
+			break
 			;;
 			
 			252)
@@ -55,7 +55,6 @@ then
 		--text "$tName Table not found" \
 		--button=gtk-go-back:1	\
 		)
-		continue
 	fi
 
 fi

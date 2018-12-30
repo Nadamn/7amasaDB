@@ -13,8 +13,6 @@ noColumns=`grep -w "$2" /var/7amasaDB/$1/.meta | cut -d: -f 2`
 
 while true
 do
-
-
 		key=$(yad \
 		--center \
 		--text-align=center \
@@ -28,7 +26,7 @@ do
 
 		if [ $choice0 = 1 ]
 		then
-			break 2
+			break 
 
 		elif [ $choice0 = 252 ]
 		then 
@@ -73,7 +71,7 @@ do
 
 		if [ $choice0 = 1 ]
 		then
-			break 2
+			break 
 
 		elif [ $choice0 = 252 ]
 		then 
@@ -97,16 +95,12 @@ do
 
 
 
-	if [ "$choice" = "Q" -o "$choice" = "q" ]
-	then
-		notDone=0
-	else
 		while true
 		do
 			ln="$linenumber"p
 		    	#echo $ln		
 			#old=`grep $key /var/7amasaDB/$1/$2 | cut -d: -f $choice`
-			old=`sed -n "$ln" /var/7amasaDB/$1/$2 | cut -d: -f $choice`
+			old=`sed -n "$ln" /var/7amasaDB/$1/$2 | cut -d: -f $colVal`
 			#echo $old
 			
 			colNum=$choice+3		
@@ -214,7 +208,6 @@ do
 		done
 		
 
-	fi
 done
 
 
