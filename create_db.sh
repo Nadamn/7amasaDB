@@ -6,8 +6,6 @@ while [ $succ = 0 ]
 do
 
 
- 
-
 
 while true
 	do
@@ -22,6 +20,8 @@ while true
 
 		choice0=$?
 
+		dbname=$(echo $dbname | awk 'BEGIN {FS="|" } { print $1 }')
+
 		if [ $choice0 = 1 ]
 		then
 			break 2
@@ -31,7 +31,7 @@ while true
 			kill -9 `ps --pid $$ -oppid=`; exit
 		elif [ $choice0 = 0 ]
 		then
-			if [[ $dbname =~ $regex ]]
+			if [[ $dbname && $dbname =~ $regex ]]
 			then
 				break
 			else
@@ -93,9 +93,10 @@ else
 		--text-align=center \
 		--text "your database created successfully!"\
 		--button="back":1	
-
 		touch /var/7amasaDB/$dbname/.meta
 		echo "dbname:"$dbname >> /var/7amasaDB/$dbname/.meta
+
+		./switch_to_db.sh $dbname
 	fi 
 	
 fi 

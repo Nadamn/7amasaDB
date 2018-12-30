@@ -1,4 +1,4 @@
-#! /usr/bin/bash -x
+#! /usr/bin/bash 
 
 # this script takes database name as input an argument 
 # N : not null
@@ -37,7 +37,7 @@ clear
 		elif [ $choice0 = 0 ]
 		then
 
-			if [[ $Table_name =~ $regex ]]
+			if [[ $Table_name && $Table_name =~ $regex ]]
 			then
 				Table_name=$(echo $Table_name | awk 'BEGIN {FS="|" } { print $1 }') 
 				break

@@ -26,14 +26,35 @@ do
 
 	case $choice in
 		1) ./create_db.sh
-		break
+		continue
 		;;
 
 		2) ./delete_database.sh
-		break
+		continue
 		;;
 
-		3) ./switch_to_db.sh 
+		3) 	tmpForm=$(yad \
+			--center \
+			--title "7amasa DB Engine" \
+			--form --field="Enter Database Name" \
+			--button=gtk-ok:0 \
+			--button=gtk-cancel:1 \
+			)
+
+			choice0=$?
+
+			if [ $choice0 = 1 ]
+			then
+				continue
+
+			elif [ $choice0 = 252 ]
+			then 
+				kill -9 `ps --pid $$ -oppid=`; exit
+			elif [ $choice0 = 0 ]
+			then
+				DBName=$(echo $tmpForm | awk 'BEGIN {FS="|" } { print $1 }') 
+				./switch_to_db.sh $DBName
+			fi
 			continue
 		;;
 
