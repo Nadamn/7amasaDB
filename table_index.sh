@@ -6,6 +6,7 @@ tmpForm=$(yad \
 --center \
 --title "7amasa DB Engine" \
 --form --field="Enter table Name" \
+--form --entry-label="Enter table Name" \
 --button=gtk-ok:0 \
 --button=gtk-cancel:1 \
 )
@@ -47,7 +48,15 @@ then
 				choice=$?
 				
 				case $choice in 
-				1) cat /var/7amasaDB/$1/$tName
+				1) 
+					
+					d=$(cat /var/7amasaDB/$1/$tName)
+					echo $d
+					{ printf '%s\t' "${d[@]}"| yad --text-info --width="200" --height="200" --title="Table content" \
+					--button="back:1" \
+					2>/dev/null
+					};
+
 				;;
 				2) ./insert_record.sh $1 $tName
 				;;

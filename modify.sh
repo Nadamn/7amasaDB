@@ -1,4 +1,4 @@
-#!/usr/bin/bash 
+#!/usr/bin/bash -x
 
 #this file is called with argument $1 db name and table name $2
 
@@ -14,17 +14,43 @@ noColumns=`grep -w "$2" /var/7amasaDB/$1/.meta | cut -d: -f 2`
 while true
 do
 
-		read -p "Enter record Primary key: " key
-		#echo $key 
-	
-		line=`grep -w "$key" /var/7amasaDB/$1/$2`
-		linenumber=`grep -wrne  "$key" /var/7amasaDB/$1/$2 | cut -d: -f 1`
 
-		if [ -z "$line" ] 
+		key=$(yad \
+		--center \
+		--text-align=center \
+		--title "7amasa DB" \
+		--form --field="Enter record Primary key: " \
+		--button=gtk-ok:0 \
+		--button=gtk-cancel:1 \
+		)
+		choice0=$?
+
+
+		if [ $choice0 = 1 ]
+		then
+			break 2
+
+		elif [ $choice0 = 252 ]
 		then 
-			echo "This id not exist!"
-		else
-			break
+			kill -9 `ps --pid $$ -oppid=`; exit
+		elif [ $choice0 = 0 ]
+		then
+			colVal=$(echo $key | awk 'BEGIN {FS="|" } { print $1 }') 
+	
+			line=`grep -w "$colVal" /var/7amasaDB/$1/$2`
+			linenumber=`grep -wrne  "$colVal" /var/7amasaDB/$1/$2 | cut -d: -f 1`
+
+			if [ -z "$line" ] 
+			then 
+				yad \
+				--title "7amasa DB Engine" \
+				--center \
+				--text-align=center \
+				--text "This id not exist!" \
+				--button="back":1 
+			else
+				break
+			fi
 		fi
 done
 
@@ -33,13 +59,43 @@ notDone=1
 while (($notDone))  
 do 
 	#echo $line 
-	read -p "Enter column number to edit or 'Q' to exit:" choice
 	
-	if (( $choice > $noColumns ))
-	then 
-		echo "Column number is out of range"
-		continue	
-	fi 
+	key=$(yad \
+		--center \
+		--text-align=center \
+		--title "7amasa DB" \
+		--form --field="Enter column number to edit or cancel:" \
+		--button=gtk-ok:0 \
+		--button=gtk-cancel:1 \
+		)
+		choice0=$?
+
+
+		if [ $choice0 = 1 ]
+		then
+			break 2
+
+		elif [ $choice0 = 252 ]
+		then 
+			kill -9 `ps --pid $$ -oppid=`; exit
+		elif [ $choice0 = 0 ]
+		then
+			colVal=$(echo $key | awk 'BEGIN {FS="|" } { print $1 }') 
+
+	
+			if (( $colVal > $noColumns ))
+			then 
+				yad \
+				--title "7amasa DB Engine" \
+				--center \
+				--text-align=center \
+				--text "Column number is out of range" \
+				--button="back":1 
+				continue	
+			fi
+		fi
+
+
 
 	if [ "$choice" = "Q" -o "$choice" = "q" ]
 	then
@@ -56,32 +112,62 @@ do
 			colNum=$choice+3		
 			constraint=`grep -w "$2" /var/7amasaDB/$1/.meta | cut -d: -f $colNum`
 
-			echo "previous:$old"
-			read -p "New:" colVal
-	
-		        if [[ $colVal =~ $regex ]]
-		        then
+			key=$(yad \
+			--center \
+			--text-align=center \
+			--title "7amasa DB" \
+			--form --field="previous:$old new:" \
+			--button=gtk-ok:0 \
+			--button=gtk-cancel:1 \
+			)
+			choice0=$?
 
 
-				if [ ! $colVal ]
-				then
-					if [ "$constraint" = "NS" -o "$constraint" = "NI" ]
+			if [ $choice0 = 1 ]
+			then
+				break 2
+
+			elif [ $choice0 = 252 ]
+			then 
+				kill -9 `ps --pid $$ -oppid=`; exit
+			elif [ $choice0 = 0 ]
+			then
+				colVal=$(echo $key | awk 'BEGIN {FS="|" } { print $1 }') 
+		
+				if [[ $colVal =~ $regex ]]
+		        	then
+
+					if [ ! $colVal ]
 					then
-						echo "$col can't be null"
-						flag=0	
-					else
-						flag=1
-					fi
-	
-				else
-					if [[ $colNum -eq 4  ]]
-					then
-						uniq=`grep -w  "$colVal" /var/7amasaDB/$1/$2 | cut -d: -f 1`
-						if [ $uniq ]
+						if [ "$constraint" = "NS" -o "$constraint" = "NI" ]
 						then
-							echo "id with the same value exists"
 							flag=0
+							yad \
+							--title "7amasa DB Engine" \
+							--center \
+							--text-align=center \
+							--text "$col can't be null" \
+							--button="back":1
 							continue
+						else
+							flag=1
+						fi
+		
+					else
+						if [[ $colNum -eq 4  ]]
+						then
+							uniq=`grep -w  "$colVal" /var/7amasaDB/$1/$2 | cut -d: -f 1`
+							if [ $uniq ]
+							then
+								flag=0
+								yad \
+								--title "7amasa DB Engine" \
+								--center \
+								--text-align=center \
+								--text "id with the same value exists" \
+								--button="back":1
+								continue
+							fi
 						fi 
 					fi
 				fi
@@ -92,8 +178,14 @@ do
 					then
 						flag=1
 					else
-						echo "$col must be an integer"
 						flag=0
+						yad \
+						--title "7amasa DB Engine" \
+						--center \
+						--text-align=center \
+						--text "$col must be an integer" \
+						--button="back":1
+						continue
 					fi
 				else
 					flag=1
@@ -108,9 +200,19 @@ do
 					break
 				fi
 			else
-				echo "invalid characters "
+				yad \
+				--title "7amasa DB Engine" \
+				--center \
+				--text-align=center \
+				--text "value contains unaccepted characters or white spaces" \
+				--button="back":1
+				
 			fi
+			
+																
+			
 		done
+		
 
 	fi
 done
