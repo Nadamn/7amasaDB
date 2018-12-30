@@ -1,7 +1,9 @@
 # 7amasaDB
 
 requirements:
+
 1- install yad https://www.systutorials.com/docs/linux/man/1-yad/
+
 
 Steps
 
